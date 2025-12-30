@@ -5,6 +5,8 @@ import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.guifroes1984.agendamento.enums.DiaSemana;
+
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -85,12 +87,14 @@ public class Profissional {
 		this.dataAtualizacao = LocalDateTime.now();
 	}
 
+	// Getters e Setters
 	public Long getId() {
 		return id;
 	}
 
 	public void setId(Long id) {
 		this.id = id;
+		atualizarDataModificacao();
 	}
 
 	public String getNome() {
@@ -99,6 +103,7 @@ public class Profissional {
 
 	public void setNome(String nome) {
 		this.nome = nome;
+		atualizarDataModificacao();
 	}
 
 	public String getTelefone() {
@@ -107,6 +112,7 @@ public class Profissional {
 
 	public void setTelefone(String telefone) {
 		this.telefone = telefone;
+		atualizarDataModificacao();
 	}
 
 	public String getEmail() {
@@ -115,6 +121,7 @@ public class Profissional {
 
 	public void setEmail(String email) {
 		this.email = email;
+		atualizarDataModificacao();
 	}
 
 	public LocalTime getHoraInicio() {
@@ -123,6 +130,7 @@ public class Profissional {
 
 	public void setHoraInicio(LocalTime horaInicio) {
 		this.horaInicio = horaInicio;
+		atualizarDataModificacao();
 	}
 
 	public LocalTime getHoraFim() {
@@ -131,6 +139,7 @@ public class Profissional {
 
 	public void setHoraFim(LocalTime horaFim) {
 		this.horaFim = horaFim;
+		atualizarDataModificacao();
 	}
 
 	public Boolean getAtivo() {
@@ -139,6 +148,7 @@ public class Profissional {
 
 	public void setAtivo(Boolean ativo) {
 		this.ativo = ativo;
+		atualizarDataModificacao();
 	}
 
 	public LocalDateTime getDataCadastro() {
@@ -163,6 +173,7 @@ public class Profissional {
 
 	public void setEspecialidades(Set<Servico> especialidades) {
 		this.especialidades = especialidades;
+		atualizarDataModificacao();
 	}
 
 	public Set<Integer> getDiasDisponiveis() {
@@ -171,6 +182,72 @@ public class Profissional {
 
 	public void setDiasDisponiveis(Set<Integer> diasDisponiveis) {
 		this.diasDisponiveis = diasDisponiveis;
+		atualizarDataModificacao();
+	}
+
+	private void atualizarDataModificacao() {
+		this.dataAtualizacao = LocalDateTime.now();
+	}
+
+	public void adicionarEspecialidade(Servico servico) {
+		this.especialidades.add(servico);
+		atualizarDataModificacao();
+	}
+
+	public void removerEspecialidade(Servico servico) {
+		this.especialidades.remove(servico);
+		atualizarDataModificacao();
+	}
+
+	public void adicionarDiaDisponivel(DiaSemana dia) {
+		this.diasDisponiveis.add(dia.getCodigo());
+		atualizarDataModificacao();
+	}
+
+	public void removerDiaDisponivel(DiaSemana dia) {
+		this.diasDisponiveis.remove(dia.getCodigo());
+		atualizarDataModificacao();
+	}
+
+	public void adicionarDiaDisponivelPorCodigo(Integer codigoDia) {
+		this.diasDisponiveis.add(codigoDia);
+		atualizarDataModificacao();
+	}
+
+	public void removerDiaDisponivelPorCodigo(Integer codigoDia) {
+		this.diasDisponiveis.remove(codigoDia);
+		atualizarDataModificacao();
+	}
+
+	public boolean estaDisponivelNoDiaPorCodigo(Integer codigoDia) {
+		if (codigoDia == null || this.diasDisponiveis == null || this.diasDisponiveis.isEmpty()) {
+			return false;
+		}
+		return this.diasDisponiveis.contains(codigoDia);
+	}
+
+	public boolean estaDisponivelNoDia(DiaSemana dia) {
+		if (dia == null || this.diasDisponiveis == null || this.diasDisponiveis.isEmpty()) {
+			return false;
+		}
+		return this.diasDisponiveis.contains(dia.getCodigo());
+	}
+
+	public boolean podeExecutarServico(Servico servico) {
+		if (servico == null || this.especialidades == null || this.especialidades.isEmpty()) {
+			return false;
+		}
+		return this.especialidades.contains(servico);
+	}
+
+	public void ativar() {
+		this.ativo = true;
+		atualizarDataModificacao();
+	}
+
+	public void desativar() {
+		this.ativo = false;
+		atualizarDataModificacao();
 	}
 
 }

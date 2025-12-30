@@ -1,12 +1,16 @@
 package com.guifroes1984.agendamento.model;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -38,11 +42,10 @@ public class Cliente {
     @Column(name = "data_cadastro")
     private LocalDateTime dataCadastro;
 
-    // REMOVIDO: Referência a Agendamento nesta fase
-    // @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)
-    // private List<Agendamento> agendamentos = new ArrayList<>();
+    
+    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)
+    private List<Agendamento> agendamentos = new ArrayList<>();
 
-    // Construtores
     public Cliente() {
         this.dataCadastro = LocalDateTime.now();
     }

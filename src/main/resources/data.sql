@@ -49,3 +49,120 @@ INSERT IGNORE INTO TBL_PROFISSIONAL_SERVICOS (profissional_id, servico_id) VALUE
 INSERT IGNORE INTO TBL_PROFISSIONAL_SERVICOS (profissional_id, servico_id) VALUES (3, 3);
 INSERT IGNORE INTO TBL_PROFISSIONAL_SERVICOS (profissional_id, servico_id) VALUES (3, 6);
 INSERT IGNORE INTO TBL_PROFISSIONAL_SERVICOS (profissional_id, servico_id) VALUES (3, 7);
+
+INSERT IGNORE INTO TBL_CLIENTES (nome, telefone, email, data_cadastro) 
+VALUES 
+('Maria Santos', '(11) 95555-4444', 'maria@email.com', NOW()),
+('João Silva', '(11) 94444-3333', 'joao@email.com', NOW());
+
+-- Agendamento 1: Maria com Ana para Manicure Simples (amanhã às 10:00)
+INSERT INTO TBL_AGENDAMENTOS 
+(cliente_id, profissional_id, servico_id, data_hora_inicio, data_hora_fim, status, valor_cobrado, observacoes, data_criacao, data_atualizacao)
+SELECT 
+    (SELECT id FROM TBL_CLIENTES WHERE email = 'maria@email.com'),
+    (SELECT id FROM TBL_PROFISSIONAIS WHERE email = 'ana@manicure.com'),
+    (SELECT id FROM TBL_SERVICOS WHERE nome = 'Manicure Simples'),
+    DATE_ADD(NOW(), INTERVAL 1 DAY) + INTERVAL 10 HOUR,
+    DATE_ADD(NOW(), INTERVAL 1 DAY) + INTERVAL 10 HOUR + INTERVAL 30 MINUTE,
+    'AGENDADO',
+    25.00,
+    'Prefere esmalte vermelho',
+    NOW(),
+    NOW()
+WHERE NOT EXISTS (
+    SELECT 1 FROM TBL_AGENDAMENTOS a 
+    WHERE a.cliente_id = (SELECT id FROM TBL_CLIENTES WHERE email = 'maria@email.com')
+    AND a.profissional_id = (SELECT id FROM TBL_PROFISSIONAIS WHERE email = 'ana@manicure.com')
+    AND DATE(a.data_hora_inicio) = DATE(DATE_ADD(NOW(), INTERVAL 1 DAY))
+    AND TIME(a.data_hora_inicio) = '10:00:00'
+);
+
+-- Agendamento 2: João com Carlos para Pedicure Simples (depois de amanhã às 14:00)
+INSERT INTO TBL_AGENDAMENTOS 
+(cliente_id, profissional_id, servico_id, data_hora_inicio, data_hora_fim, status, valor_cobrado, observacoes, data_criacao, data_atualizacao)
+SELECT 
+    (SELECT id FROM TBL_CLIENTES WHERE email = 'joao@email.com'),
+    (SELECT id FROM TBL_PROFISSIONAIS WHERE email = 'carlos@manicure.com'),
+    (SELECT id FROM TBL_SERVICOS WHERE nome = 'Pedicure Simples'),
+    DATE_ADD(NOW(), INTERVAL 2 DAY) + INTERVAL 14 HOUR,
+    DATE_ADD(NOW(), INTERVAL 2 DAY) + INTERVAL 14 HOUR + INTERVAL 45 MINUTE,
+    'CONFIRMADO',
+    30.00,
+    'Pé com calosidade',
+    NOW(),
+    NOW()
+WHERE NOT EXISTS (
+    SELECT 1 FROM TBL_AGENDAMENTOS a 
+    WHERE a.cliente_id = (SELECT id FROM TBL_CLIENTES WHERE email = 'joao@email.com')
+    AND a.profissional_id = (SELECT id FROM TBL_PROFISSIONAIS WHERE email = 'carlos@manicure.com')
+    AND DATE(a.data_hora_inicio) = DATE(DATE_ADD(NOW(), INTERVAL 2 DAY))
+    AND TIME(a.data_hora_inicio) = '14:00:00'
+);
+
+-- Agendamento 3: Maria com Beatriz para Alongamento (daqui a 3 dias às 11:00)
+INSERT INTO TBL_AGENDAMENTOS 
+(cliente_id, profissional_id, servico_id, data_hora_inicio, data_hora_fim, status, valor_cobrado, observacoes, data_criacao, data_atualizacao)
+SELECT 
+    (SELECT id FROM TBL_CLIENTES WHERE email = 'maria@email.com'),
+    (SELECT id FROM TBL_PROFISSIONAIS WHERE email = 'beatriz@manicure.com'),
+    (SELECT id FROM TBL_SERVICOS WHERE nome = 'Manicure com Alongamento'),
+    DATE_ADD(NOW(), INTERVAL 3 DAY) + INTERVAL 11 HOUR,
+    DATE_ADD(NOW(), INTERVAL 3 DAY) + INTERVAL 11 HOUR + INTERVAL 90 MINUTE,
+    'AGENDADO',
+    80.00,
+    'Alongamento em gel, cor nude',
+    NOW(),
+    NOW()
+WHERE NOT EXISTS (
+    SELECT 1 FROM TBL_AGENDAMENTOS a 
+    WHERE a.cliente_id = (SELECT id FROM TBL_CLIENTES WHERE email = 'maria@email.com')
+    AND a.profissional_id = (SELECT id FROM TBL_PROFISSIONAIS WHERE email = 'beatriz@manicure.com')
+    AND DATE(a.data_hora_inicio) = DATE(DATE_ADD(NOW(), INTERVAL 3 DAY))
+    AND TIME(a.data_hora_inicio) = '11:00:00'
+);
+
+-- Agendamento 4: Cancelado para teste
+INSERT INTO TBL_AGENDAMENTOS 
+(cliente_id, profissional_id, servico_id, data_hora_inicio, data_hora_fim, status, valor_cobrado, observacoes, data_cancelamento, motivo_cancelamento, data_criacao, data_atualizacao)
+SELECT 
+    (SELECT id FROM TBL_CLIENTES WHERE email = 'joao@email.com'),
+    (SELECT id FROM TBL_PROFISSIONAIS WHERE email = 'ana@manicure.com'),
+    (SELECT id FROM TBL_SERVICOS WHERE nome = 'Manicure Spa'),
+    DATE_SUB(NOW(), INTERVAL 2 DAY) + INTERVAL 15 HOUR,
+    DATE_SUB(NOW(), INTERVAL 2 DAY) + INTERVAL 15 HOUR + INTERVAL 45 MINUTE,
+    'CANCELADO',
+    40.00,
+    'Cliente solicitou massagem extra',
+    DATE_SUB(NOW(), INTERVAL 1 DAY),
+    'Cliente mudou de ideia',
+    DATE_SUB(NOW(), INTERVAL 3 DAY),
+    DATE_SUB(NOW(), INTERVAL 1 DAY)
+WHERE NOT EXISTS (
+    SELECT 1 FROM TBL_AGENDAMENTOS a 
+    WHERE a.cliente_id = (SELECT id FROM TBL_CLIENTES WHERE email = 'joao@email.com')
+    AND a.profissional_id = (SELECT id FROM TBL_PROFISSIONAIS WHERE email = 'ana@manicure.com')
+    AND DATE(a.data_hora_inicio) = DATE(DATE_SUB(NOW(), INTERVAL 2 DAY))
+    AND TIME(a.data_hora_inicio) = '15:00:00'
+);
+
+-- Agendamento 5: Realizado para teste
+INSERT INTO TBL_AGENDAMENTOS 
+(cliente_id, profissional_id, servico_id, data_hora_inicio, data_hora_fim, status, valor_cobrado, observacoes, data_criacao, data_atualizacao)
+SELECT 
+    (SELECT id FROM TBL_CLIENTES WHERE email = 'maria@email.com'),
+    (SELECT id FROM TBL_PROFISSIONAIS WHERE email = 'carlos@manicure.com'),
+    (SELECT id FROM TBL_SERVICOS WHERE nome = 'Design de Unhas'),
+    DATE_SUB(NOW(), INTERVAL 1 DAY) + INTERVAL 16 HOUR,
+    DATE_SUB(NOW(), INTERVAL 1 DAY) + INTERVAL 16 HOUR + INTERVAL 60 MINUTE,
+    'REALIZADO',
+    60.00,
+    'Design floral azul',
+    DATE_SUB(NOW(), INTERVAL 2 DAY),
+    NOW()
+WHERE NOT EXISTS (
+    SELECT 1 FROM TBL_AGENDAMENTOS a 
+    WHERE a.cliente_id = (SELECT id FROM TBL_CLIENTES WHERE email = 'maria@email.com')
+    AND a.profissional_id = (SELECT id FROM TBL_PROFISSIONAIS WHERE email = 'carlos@manicure.com')
+    AND DATE(a.data_hora_inicio) = DATE(DATE_SUB(NOW(), INTERVAL 1 DAY))
+    AND TIME(a.data_hora_inicio) = '16:00:00'
+);
