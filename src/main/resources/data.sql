@@ -166,3 +166,23 @@ WHERE NOT EXISTS (
     AND DATE(a.data_hora_inicio) = DATE(DATE_SUB(NOW(), INTERVAL 1 DAY))
     AND TIME(a.data_hora_inicio) = '16:00:00'
 );
+
+-- Mais agendamentos para testes de relatórios
+INSERT IGNORE INTO TBL_AGENDAMENTOS 
+(cliente_id, profissional_id, servico_id, data_hora_inicio, data_hora_fim, status, valor_cobrado, data_criacao, data_atualizacao)
+VALUES 
+-- Agendamentos realizados
+(1, 1, 1, '2025-12-01 10:00:00', '2025-12-01 10:30:00', 'REALIZADO', 25.00, NOW(), NOW()),
+(2, 2, 2, '2025-12-01 14:00:00', '2025-12-01 14:45:00', 'REALIZADO', 30.00, NOW(), NOW()),
+(1, 3, 3, '2025-12-02 11:00:00', '2025-12-02 12:30:00', 'REALIZADO', 80.00, NOW(), NOW()),
+
+-- Agendamentos confirmados
+(2, 1, 4, '2025-12-03 15:00:00', '2025-12-03 16:00:00', 'CONFIRMADO', 50.00, NOW(), NOW()),
+(1, 2, 5, '2025-12-04 16:00:00', '2025-12-04 16:45:00', 'CONFIRMADO', 40.00, NOW(), NOW()),
+
+-- Agendamentos cancelados
+(2, 3, 6, '2025-12-05 13:00:00', '2025-12-05 14:00:00', 'CANCELADO', 60.00, NOW(), NOW()),
+
+-- Agendamentos futuros
+(1, 1, 1, '2025-12-31 09:00:00', '2025-12-31 09:30:00', 'AGENDADO', 25.00, NOW(), NOW()),
+(2, 2, 2, '2025-12-31 10:00:00', '2025-12-31 10:45:00', 'AGENDADO', 30.00, NOW(), NOW());
